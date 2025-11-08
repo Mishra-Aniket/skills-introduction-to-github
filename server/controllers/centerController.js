@@ -66,9 +66,25 @@ const updateCenter = async (req, res) => {
     const { centerId } = req.params;
     const updates = req.body;
 
+    // Sanitize and validate updates - only allow specific fields
+    const allowedUpdates = ['name', 'address', 'city', 'state', 'pincode', 'contactEmail', 'contactPhone', 'isActive'];
+    const sanitizedUpdates = {};
+    
+    Object.keys(updates).forEach(key => {
+      if (allowedUpdates.includes(key)) {
+        // Ensure values are strings or booleans as expected
+        if (key === 'isActive') {
+          sanitizedUpdates[key] = Boolean(updates[key]);
+        } else {
+          sanitizedUpdates[key] = String(updates[key]);
+        }
+      }
+    });
+
+    // Use $set operator for explicit field updates
     const center = await Center.findByIdAndUpdate(
       centerId,
-      updates,
+      { $set: sanitizedUpdates },
       { new: true, runValidators: true }
     );
 

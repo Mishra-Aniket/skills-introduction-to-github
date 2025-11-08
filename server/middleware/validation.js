@@ -9,9 +9,10 @@ const sanitizeInput = (req, res, next) => {
   next();
 };
 
-// Validate email format
+// Validate email format - using a simpler, safer regex
 const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Simpler regex that avoids ReDoS vulnerability
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 };
 
