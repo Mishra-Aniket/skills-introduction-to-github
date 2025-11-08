@@ -3,7 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const mongoSanitize = require('express-mongo-sanitize');
 const connectDB = require('./server/config/database');
+const { apiLimiter } = require('./server/middleware/rateLimiter');
+const { sanitizeInput } = require('./server/middleware/validation');
 
 // Import routes
 const authRoutes = require('./server/routes/authRoutes');
@@ -17,10 +20,17 @@ const app = express();
 // Connect to database
 connectDB();
 
-// Middleware
+// Security Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Sanitize data to prevent NoSQL injection
+app.use(mongoSanitize());
+app.use(sanitizeInput);
+
+// Apply rate limiting to all API routes
+app.use('/api/', apiLimiter);
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));

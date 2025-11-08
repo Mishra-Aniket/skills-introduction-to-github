@@ -6,8 +6,13 @@ const register = async (req, res) => {
   try {
     const { name, email, password, role, centerId } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    // Input validation
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Check if user already exists - Using findOne with sanitized input
+    const existingUser = await User.findOne({ email: String(email).toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
@@ -51,8 +56,8 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Find user - Using findOne with sanitized input
+    const user = await User.findOne({ email: String(email).toLowerCase() });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }

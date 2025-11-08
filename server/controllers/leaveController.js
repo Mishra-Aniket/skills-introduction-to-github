@@ -43,8 +43,9 @@ const getMyLeaves = async (req, res) => {
     const { status, page = 1, limit = 20 } = req.query;
 
     const query = { userId };
-    if (status) {
-      query.status = status;
+    // Sanitize status input
+    if (status && ['pending', 'approved', 'rejected'].includes(String(status))) {
+      query.status = String(status);
     }
 
     const leaves = await Leave.find(query)
@@ -72,8 +73,9 @@ const getAllLeaves = async (req, res) => {
     const { status, page = 1, limit = 20 } = req.query;
 
     const query = {};
-    if (status) {
-      query.status = status;
+    // Sanitize status input
+    if (status && ['pending', 'approved', 'rejected'].includes(String(status))) {
+      query.status = String(status);
     }
 
     const leaves = await Leave.find(query)

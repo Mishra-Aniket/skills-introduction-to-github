@@ -30,7 +30,11 @@ const createCenter = async (req, res) => {
 const getAllCenters = async (req, res) => {
   try {
     const { isActive } = req.query;
-    const query = isActive !== undefined ? { isActive: isActive === 'true' } : {};
+    const query = {};
+    // Sanitize isActive input
+    if (isActive !== undefined) {
+      query.isActive = String(isActive) === 'true';
+    }
 
     const centers = await Center.find(query).sort({ name: 1 });
 
