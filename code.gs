@@ -411,6 +411,12 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
   
+  if (page === 'examples') {
+    return HtmlService.createHtmlOutputFromFile('examples')
+      .setTitle('Usage Examples')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  
   return HtmlService.createHtmlOutputFromFile('index')
     .setTitle('Clock In/Out System')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
