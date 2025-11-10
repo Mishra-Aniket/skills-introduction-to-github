@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave Management</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .nav-link {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 10px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .nav-link:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .nav-link.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input[type="date"],
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .session-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .session-info p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .session-info strong {
+      color: #333;
+    }
+
+    .leave-list {
+      margin-top: 30px;
+    }
+
+    .leave-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #667eea;
+    }
+
+    .leave-item h3 {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .leave-item p {
+      color: #666;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .leave-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .leave-status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .leave-status.approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .leave-status.rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📅 Leave Management</h1>
+    <p class="subtitle">Request and manage your leaves</p>
+
+    <!-- Navigation -->
+    <div class="nav-links">
+      <a href="?page=index" class="nav-link">Clock In/Out</a>
+      <a href="?page=leave" class="nav-link active">Leave Management</a>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Login Required -->
+    <div id="loginRequired" class="hidden">
+      <div class="alert alert-info">
+        <strong>Login Required</strong><br>
+        Please login from the Clock In/Out page to access leave management.
+      </div>
+      <a href="?page=index" class="nav-link">Go to Login</a>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="hidden">
+      <div class="session-info">
+        <p id="userName"></p>
+        <p id="userEmail"></p>
+      </div>
+
+      <!-- Leave Request Form -->
+      <div class="form-group">
+        <label for="leaveType">Leave Type</label>
+        <select id="leaveType">
+          <option value="">Select leave type</option>
+          <option value="sick">Sick Leave</option>
+          <option value="casual">Casual Leave</option>
+          <option value="vacation">Vacation Leave</option>
+          <option value="personal">Personal Leave</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="reason">Reason</label>
+        <textarea id="reason" placeholder="Enter reason for leave request"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="submitLeaveRequest()">
+        Submit Leave Request
+        <span id="submitLoading" class="loading hidden"></span>
+      </button>
+
+      <button class="btn-secondary" onclick="window.location.href='?page=index'">
+        Back to Clock In/Out
+      </button>
+
+      <!-- Leave History -->
+      <div class="leave-list">
+        <h2 style="margin-bottom: 20px; color: #333; font-size: 20px;">Leave History</h2>
+        <div id="leaveHistory">
+          <div class="empty-state">
+            <p>No leave requests found</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Session management
+    const SESSION_KEY = 'clockin_session_token';
+    const USER_KEY = 'clockin_user_data';
+    
+    let currentSession = null;
+    let currentUser = null;
+
+    // Initialize app on load
+    window.onload = function() {
+      checkSession();
+    };
+
+    // Check for existing session
+    function checkSession() {
+      const sessionToken = localStorage.getItem(SESSION_KEY);
+      const userData = localStorage.getItem(USER_KEY);
+
+      if (sessionToken && userData) {
+        currentSession = sessionToken;
+        currentUser = JSON.parse(userData);
+        
+        // Validate session with server
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              showMainContent();
+              loadLeaveHistory();
+            } else {
+              showLoginRequired();
+            }
+          })
+          .withFailureHandler(function(error) {
+            showLoginRequired();
+          })
+          .getUserStatus(sessionToken);
+      } else {
+        showLoginRequired();
+      }
+    }
+
+    // Submit leave request
+    function submitLeaveRequest() {
+      const leaveType = document.getElementById('leaveType').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const reason = document.getElementById('reason').value.trim();
+
+      if (!leaveType || !startDate || !endDate) {
+        showAlert('Please fill in all required fields', 'error');
+        return;
+      }
+
+      if (new Date(startDate) > new Date(endDate)) {
+        showAlert('End date must be after start date', 'error');
+        return;
+      }
+
+      setLoading('submitLoading', true);
+
+      // Note: This is a placeholder. In a real implementation, you would call a server function
+      // For now, we'll just show a success message and store locally
+      
+      setTimeout(function() {
+        setLoading('submitLoading', false);
+        
+        const leaveRequest = {
+          id: Date.now(),
+          type: leaveType,
+          startDate: startDate,
+          endDate: endDate,
+          reason: reason,
+          status: 'pending',
+          submittedAt: new Date().toISOString()
+        };
+        
+        // Store in localStorage (in production, this would be saved to the server)
+        const leaves = JSON.parse(localStorage.getItem('leave_requests') || '[]');
+        leaves.push(leaveRequest);
+        localStorage.setItem('leave_requests', JSON.stringify(leaves));
+        
+        showAlert('Leave request submitted successfully!', 'success');
+        clearForm();
+        loadLeaveHistory();
+      }, 1000);
+    }
+
+    // Load leave history
+    function loadLeaveHistory() {
+      const historyContainer = document.getElementById('leaveHistory');
+      const leaves = JSON.parse(localStorage.getItem('leave_requests') || '[]');
+      
+      if (leaves.length === 0) {
+        historyContainer.innerHTML = '<div class="empty-state"><p>No leave requests found</p></div>';
+        return;
+      }
+      
+      // Sort by submitted date (newest first)
+      leaves.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+      
+      historyContainer.innerHTML = leaves.map(leave => `
+        <div class="leave-item">
+          <h3>${capitalizeFirst(leave.type)} Leave</h3>
+          <p><strong>Duration:</strong> ${formatDate(leave.startDate)} to ${formatDate(leave.endDate)}</p>
+          ${leave.reason ? `<p><strong>Reason:</strong> ${leave.reason}</p>` : ''}
+          <p><strong>Submitted:</strong> ${formatDateTime(leave.submittedAt)}</p>
+          <span class="leave-status ${leave.status}">${capitalizeFirst(leave.status)}</span>
+        </div>
+      `).join('');
+    }
+
+    // Clear form
+    function clearForm() {
+      document.getElementById('leaveType').value = '';
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value = '';
+      document.getElementById('reason').value = '';
+    }
+
+    // Show/hide screens
+    function showLoginRequired() {
+      document.getElementById('loginRequired').classList.remove('hidden');
+      document.getElementById('mainContent').classList.add('hidden');
+    }
+
+    function showMainContent() {
+      document.getElementById('loginRequired').classList.add('hidden');
+      document.getElementById('mainContent').classList.remove('hidden');
+      
+      if (currentUser) {
+        document.getElementById('userName').textContent = 'Name: ' + currentUser.name;
+        document.getElementById('userEmail').textContent = 'Email: ' + currentUser.email;
+      }
+      
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('startDate').min = today;
+      document.getElementById('endDate').min = today;
+    }
+
+    // Alert management
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'alert alert-' + type;
+      alertDiv.textContent = message;
+      
+      alertContainer.appendChild(alertDiv);
+      
+      setTimeout(function() {
+        alertDiv.remove();
+      }, 5000);
+    }
+
+    // Loading management
+    function setLoading(elementId, isLoading) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        if (isLoading) {
+          element.classList.remove('hidden');
+        } else {
+          element.classList.add('hidden');
+        }
+      }
+    }
+
+    // Utility functions
+    function capitalizeFirst(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
+    }
+
+    function formatDateTime(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
+  </script>
+</body>
+</html>
