@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASK Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .location-status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .location-status.success {
+            border-left-color: #28a745;
+        }
+        
+        .location-status.error {
+            border-left-color: #dc3545;
+        }
+        
+        .location-status h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-icon.pending {
+            background: #ffc107;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-icon.success {
+            background: #28a745;
+        }
+        
+        .status-icon.error {
+            background: #dc3545;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .location-details {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .location-details strong {
+            color: #333;
+        }
+        
+        .accuracy-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .accuracy-high {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .accuracy-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .accuracy-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-clock-in {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-clock-in:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-clock-out {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-clock-out:hover:not(:disabled) {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-refresh {
+            background: #007bff;
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        .btn-refresh:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.show {
+            display: block;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn-confirm {
+            background: #28a745;
+            color: white;
+        }
+        
+        .modal-btn-confirm:hover {
+            background: #218838;
+        }
+        
+        .modal-btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .modal-btn-cancel:hover {
+            background: #5a6268;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #004085;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 ASK Attendance</h1>
+        <p class="subtitle">Clock In/Out System</p>
+        
+        <div id="messageBox" class="message"></div>
+        
+        <div id="locationStatus" class="location-status">
+            <h3>
+                <span class="status-icon pending"></span>
+                Location Status: Checking...
+            </h3>
+            <div class="location-details">
+                <p>Requesting location permission...</p>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="clockInBtn" class="btn btn-clock-in" disabled>
+                <span>🔓</span> Clock In
+            </button>
+            <button id="clockOutBtn" class="btn btn-clock-out" disabled>
+                <span>🔒</span> Clock Out
+            </button>
+            <button id="refreshLocationBtn" class="btn btn-refresh">
+                <span>📍</span> Refresh Location
+            </button>
+        </div>
+        
+        <div class="info-box">
+            ℹ️ <strong>Note:</strong> Location access is mandatory for attendance tracking. 
+            Please allow location permissions when prompted.
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Confirm Clock Action</div>
+            <div class="modal-body" id="modalBody">
+                Are you sure you want to proceed with this action?
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let currentLocation = null;
+        let locationWatchId = null;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            // Request location immediately
+            requestLocationPermission();
+            
+            // Set up button event listeners
+            document.getElementById('clockInBtn').addEventListener('click', () => showConfirmationModal('clockIn'));
+            document.getElementById('clockOutBtn').addEventListener('click', () => showConfirmationModal('clockOut'));
+            document.getElementById('refreshLocationBtn').addEventListener('click', requestLocationPermission);
+        }
+        
+        function requestLocationPermission() {
+            showMessage('Requesting location permission...', 'info');
+            updateLocationStatus('pending', 'Requesting location permission...');
+            
+            if (!navigator.geolocation) {
+                const errorMsg = 'Geolocation is not supported by your browser. Please use a modern browser.';
+                showMessage(errorMsg, 'error');
+                updateLocationStatus('error', errorMsg);
+                disableClockButtons();
+                return;
+            }
+            
+            // Request current position with high accuracy
+            navigator.geolocation.getCurrentPosition(
+                handleLocationSuccess,
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+        
+        function handleLocationSuccess(position) {
+            const coords = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                timestamp: new Date().toISOString()
+            };
+            
+            currentLocation = coords;
+            
+            // Reverse geocode to get address
+            reverseGeocode(coords.latitude, coords.longitude);
+            
+            // Update UI
+            const accuracyClass = getAccuracyClass(coords.accuracy);
+            const accuracyLabel = getAccuracyLabel(coords.accuracy);
+            
+            updateLocationStatus('success', 
+                `<strong>Location acquired!</strong><br>
+                 Latitude: ${coords.latitude.toFixed(6)}<br>
+                 Longitude: ${coords.longitude.toFixed(6)}<br>
+                 Accuracy: ${coords.accuracy.toFixed(0)}m 
+                 <span class="accuracy-indicator ${accuracyClass}">${accuracyLabel}</span><br>
+                 <em id="addressDisplay">Fetching address...</em>`
+            );
+            
+            enableClockButtons();
+            showMessage('Location captured successfully! You can now clock in/out.', 'success');
+        }
+        
+        function handleLocationError(error) {
+            let errorMessage = '';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = 'Location permission denied. Please enable location access in your browser settings to use this feature.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = 'Location information is unavailable. Please check your device settings.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = 'Location request timed out. Please try again.';
+                    break;
+                default:
+                    errorMessage = 'An unknown error occurred while getting location.';
+            }
+            
+            currentLocation = null;
+            updateLocationStatus('error', errorMessage);
+            disableClockButtons();
+            showMessage(errorMessage, 'error');
+        }
+        
+        function reverseGeocode(lat, lng) {
+            // Using Nominatim (OpenStreetMap) for free reverse geocoding
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+            
+            fetch(url, {
+                headers: {
+                    'User-Agent': 'ASK-Attendance-System'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let address = 'Address not available';
+                
+                if (data && data.display_name) {
+                    address = data.display_name;
+                } else if (data && data.address) {
+                    // Build address from components
+                    const parts = [];
+                    if (data.address.road) parts.push(data.address.road);
+                    if (data.address.suburb) parts.push(data.address.suburb);
+                    if (data.address.city) parts.push(data.address.city);
+                    if (data.address.state) parts.push(data.address.state);
+                    if (data.address.country) parts.push(data.address.country);
+                    address = parts.join(', ');
+                }
+                
+                currentLocation.address = address;
+                
+                // Update the address display
+                const addressDisplay = document.getElementById('addressDisplay');
+                if (addressDisplay) {
+                    addressDisplay.innerHTML = `<strong>Address:</strong> ${address}`;
+                }
+            })
+            .catch(error => {
+                console.error('Reverse geocoding error:', error);
+                currentLocation.address = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                const addressDisplay = document.getElementById('addressDisplay');
+                if (addressDisplay) {
+                    addressDisplay.innerHTML = `<em>Address lookup failed. Using coordinates.</em>`;
+                }
+            });
+        }
+        
+        function getAccuracyClass(accuracy) {
+            if (accuracy <= 20) return 'accuracy-high';
+            if (accuracy <= 100) return 'accuracy-medium';
+            return 'accuracy-low';
+        }
+        
+        function getAccuracyLabel(accuracy) {
+            if (accuracy <= 20) return 'High';
+            if (accuracy <= 100) return 'Medium';
+            return 'Low';
+        }
+        
+        function updateLocationStatus(status, message) {
+            const statusDiv = document.getElementById('locationStatus');
+            const statusIcon = statusDiv.querySelector('.status-icon');
+            const detailsDiv = statusDiv.querySelector('.location-details');
+            
+            // Update icon
+            statusIcon.className = 'status-icon ' + status;
+            
+            // Update status class
+            statusDiv.className = 'location-status';
+            if (status === 'success') {
+                statusDiv.classList.add('success');
+            } else if (status === 'error') {
+                statusDiv.classList.add('error');
+            }
+            
+            // Update header
+            const header = statusDiv.querySelector('h3');
+            const statusText = status === 'success' ? 'Available' : 
+                              status === 'error' ? 'Unavailable' : 'Checking...';
+            header.innerHTML = `<span class="status-icon ${status}"></span>Location Status: ${statusText}`;
+            
+            // Update details
+            detailsDiv.innerHTML = `<p>${message}</p>`;
+        }
+        
+        function enableClockButtons() {
+            document.getElementById('clockInBtn').disabled = false;
+            document.getElementById('clockOutBtn').disabled = false;
+        }
+        
+        function disableClockButtons() {
+            document.getElementById('clockInBtn').disabled = true;
+            document.getElementById('clockOutBtn').disabled = true;
+        }
+        
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = 'message show ' + type;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 5000);
+            }
+        }
+        
+        function showConfirmationModal(action) {
+            if (!currentLocation) {
+                showMessage('Location not available. Please allow location access first.', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('confirmationModal');
+            const modalBody = document.getElementById('modalBody');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            
+            const actionText = action === 'clockIn' ? 'Clock In' : 'Clock Out';
+            const address = currentLocation.address || 'Location address being fetched...';
+            
+            modalBody.innerHTML = `
+                <p>Are you sure you want to <strong>${actionText}</strong>?</p>
+                <p style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 12px;">
+                    <strong>Location:</strong><br>
+                    ${address}<br>
+                    <small style="color: #666;">
+                        Lat: ${currentLocation.latitude.toFixed(6)}, 
+                        Lng: ${currentLocation.longitude.toFixed(6)}
+                    </small>
+                </p>
+            `;
+            
+            // Set up confirm button
+            confirmBtn.onclick = () => {
+                closeModal();
+                if (action === 'clockIn') {
+                    performClockIn();
+                } else {
+                    performClockOut();
+                }
+            };
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmationModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        function performClockIn() {
+            if (!validateLocation()) return;
+            
+            showMessage('Processing clock in...', 'info');
+            disableClockButtons();
+            
+            const data = {
+                userId: 'user_' + Date.now(), // In production, this would be the actual user ID
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                accuracy: currentLocation.accuracy,
+                address: currentLocation.address || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Call backend
+            google.script.run
+                .withSuccessHandler(handleClockInSuccess)
+                .withFailureHandler(handleClockError)
+                .clockIn(data);
+        }
+        
+        function performClockOut() {
+            if (!validateLocation()) return;
+            
+            showMessage('Processing clock out...', 'info');
+            disableClockButtons();
+            
+            const data = {
+                userId: 'user_' + Date.now(), // In production, this would be the actual user ID
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                accuracy: currentLocation.accuracy,
+                address: currentLocation.address || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Call backend
+            google.script.run
+                .withSuccessHandler(handleClockOutSuccess)
+                .withFailureHandler(handleClockError)
+                .clockOut(data);
+        }
+        
+        function validateLocation() {
+            if (!currentLocation) {
+                showMessage('Location not available. Please refresh location and try again.', 'error');
+                return false;
+            }
+            
+            if (!currentLocation.latitude || !currentLocation.longitude) {
+                showMessage('Invalid location data. Please refresh location and try again.', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function handleClockInSuccess(response) {
+            enableClockButtons();
+            if (response.success) {
+                showMessage(`✅ Clock In successful! Time: ${new Date(response.timestamp).toLocaleString()}`, 'success');
+            } else {
+                showMessage('❌ Clock In failed: ' + (response.error || 'Unknown error'), 'error');
+            }
+        }
+        
+        function handleClockOutSuccess(response) {
+            enableClockButtons();
+            if (response.success) {
+                showMessage(`✅ Clock Out successful! Time: ${new Date(response.timestamp).toLocaleString()}`, 'success');
+            } else {
+                showMessage('❌ Clock Out failed: ' + (response.error || 'Unknown error'), 'error');
+            }
+        }
+        
+        function handleClockError(error) {
+            enableClockButtons();
+            showMessage('❌ Error: ' + error.message, 'error');
+        }
+    </script>
+</body>
+</html>
