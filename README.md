@@ -13,6 +13,35 @@ _Get started using GitHub in less than an hour._
 
 </header>
 
+---
+
+## 🕐 ASK Attendance System
+
+This repository also contains an **ASK Attendance System** with mandatory location tracking for Clock In/Out operations.
+
+### Features
+- ✅ Mandatory geolocation capture for attendance tracking
+- ✅ Real-time location status indicators
+- ✅ Address reverse geocoding
+- ✅ Location accuracy indicators (High/Medium/Low)
+- ✅ Confirmation dialogs before clock actions
+- ✅ Backend validation to ensure data integrity
+- ✅ Comprehensive error handling
+
+### Quick Start
+1. Deploy `Code.gs` to Google Apps Script
+2. Add `index.html` as an HTML file in the Apps Script project
+3. Deploy as a web app
+4. Grant location permissions when prompted
+5. Use Clock In/Out buttons to record attendance
+
+### Documentation
+See [LOCATION_TRACKING.md](LOCATION_TRACKING.md) for detailed implementation documentation.
+
+![ASK Attendance System](https://github.com/user-attachments/assets/832d6f37-694c-4c51-b64c-3622cb1dc2c2)
+
+---
+
 <!--
   <<< Author notes: Step 1 >>>
   Choose 3-5 steps for your course.
