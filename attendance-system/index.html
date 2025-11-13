@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysicsWallah - Attendance System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --dark-bg: #1f2937;
+      --light-bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --border-color: #e5e7eb;
+      --success-bg: #d1fae5;
+      --success-text: #065f46;
+      --error-bg: #fee2e2;
+      --error-text: #991b1b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 0;
+      color: var(--text-primary);
+    }
+
+    /* Header with gradient */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .user-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+      padding: 24px;
+      margin-bottom: 24px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      font-size: 24px;
+    }
+
+    /* Real-time Clock */
+    .clock-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .clock-time {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 10px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-date {
+      font-size: 18px;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+
+    .clock-day {
+      font-size: 14px;
+      opacity: 0.85;
+      margin-top: 5px;
+    }
+
+    /* Status Indicators */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .status-item {
+      background: var(--light-bg);
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .status-item.success {
+      border-left-color: var(--secondary-color);
+      background: var(--success-bg);
+    }
+
+    .status-item.warning {
+      border-left-color: var(--warning-color);
+    }
+
+    .status-item.danger {
+      border-left-color: var(--danger-color);
+      background: var(--error-bg);
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-success {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    /* Location Display */
+    .location-display {
+      background: var(--light-bg);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .location-icon {
+      font-size: 24px;
+    }
+
+    .location-text {
+      flex: 1;
+    }
+
+    .location-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .location-coords {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Login Screen */
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo {
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .login-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border-left: 4px solid var(--secondary-color);
+    }
+
+    .alert-error {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border-left: 4px solid var(--danger-color);
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      color: #1e40af;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      color: #92400e;
+      border-left: 4px solid var(--warning-color);
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loading-content {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      border: 4px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    /* Attendance Table */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      background: var(--light-bg);
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr:hover {
+      background: var(--light-bg);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-danger {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .clock-time {
+        font-size: 36px;
+      }
+
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .login-card {
+        padding: 24px;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div>Please wait...</div>
+    </div>
+  </div>
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">PhysicsWallah</div>
+        <div class="login-subtitle">Teacher Attendance System</div>
+      </div>
+      
+      <div id="loginAlert"></div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" class="form-input" required placeholder="teacher@pw.live">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password">
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full">
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="mainApp" class="hidden">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo">PhysicsWallah</div>
+        </div>
+        <div class="user-info">
+          <div>
+            <div class="user-name" id="userName">Teacher Name</div>
+            <div style="font-size: 12px; opacity: 0.9;" id="userEmail">email@pw.live</div>
+          </div>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Real-time Clock -->
+      <div class="card clock-card">
+        <div class="clock-time" id="currentTime">00:00:00</div>
+        <div class="clock-date" id="currentDate">January 1, 2024</div>
+        <div class="clock-day" id="currentDay">Monday</div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+          <button class="tab" onclick="switchTab('attendance')">Attendance</button>
+          <button class="tab" onclick="switchTab('leave')">Leave Request</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboardTab" class="tab-content active">
+          <div id="dashboardAlert"></div>
+
+          <!-- Today's Status -->
+          <div class="status-grid" id="todayStatus">
+            <div class="status-item">
+              <div class="status-label">Status</div>
+              <div class="status-value" id="statusValue">Not Marked</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Clock In</div>
+              <div class="status-value" id="clockInValue">--:--</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Clock Out</div>
+              <div class="status-value" id="clockOutValue">--:--</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Hours Worked</div>
+              <div class="status-value" id="hoursValue">0.00</div>
+            </div>
+          </div>
+
+          <!-- Location Display -->
+          <div class="location-display" id="locationDisplay">
+            <div class="location-icon">📍</div>
+            <div class="location-text">
+              <div class="location-name" id="locationName">Detecting location...</div>
+              <div class="location-coords" id="locationCoords">Please enable location access</div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button id="clockInBtn" class="btn btn-success btn-full" onclick="clockIn()">
+              ⏰ Clock In
+            </button>
+            <button id="clockOutBtn" class="btn btn-danger btn-full" onclick="clockOut()" disabled>
+              ⏰ Clock Out
+            </button>
+          </div>
+
+          <!-- Monthly Statistics -->
+          <h3 style="margin-top: 32px; margin-bottom: 16px;">Monthly Statistics</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="statPresent">0</div>
+              <div class="stat-label">Present</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statAbsent">0</div>
+              <div class="stat-label">Absent</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statTotalHours">0</div>
+              <div class="stat-label">Total Hours</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statAvgHours">0</div>
+              <div class="stat-label">Avg Hours/Day</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div id="attendanceTab" class="tab-content">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Clock In</th>
+                  <th>Clock Out</th>
+                  <th>Hours</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTable">
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                    Loading attendance records...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Leave Request Tab -->
+        <div id="leaveTab" class="tab-content">
+          <div id="leaveAlert"></div>
+          
+          <form id="leaveForm">
+            <div class="form-group">
+              <label class="form-label" for="fromDate">From Date</label>
+              <input type="date" id="fromDate" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="toDate">To Date</label>
+              <input type="date" id="toDate" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="leaveReason">Reason</label>
+              <textarea id="leaveReason" class="form-textarea" required placeholder="Enter reason for leave..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Submit Leave Request</button>
+          </form>
+
+          <h3 style="margin-top: 32px; margin-bottom: 16px;">Leave Requests History</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Days</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="leaveTable">
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                    No leave requests found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let currentUser = null;
+    let currentLocation = null;
+    let centers = [];
+
+    // Initialize on page load
+    window.onload = function() {
+      // Check if user is already logged in (session storage)
+      const savedUser = sessionStorage.getItem('pwUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showMainApp();
+      }
+    };
+
+    // Real-time Clock
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-IN', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      });
+      const dateStr = now.toLocaleDateString('en-IN', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      const dayStr = now.toLocaleDateString('en-IN', { weekday: 'long' });
+      
+      document.getElementById('currentTime').textContent = timeStr;
+      document.getElementById('currentDate').textContent = dateStr;
+      document.getElementById('currentDay').textContent = dayStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      showLoading(true);
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          if (result.success) {
+            currentUser = result.teacher;
+            sessionStorage.setItem('pwUser', JSON.stringify(currentUser));
+            showMainApp();
+          } else {
+            showAlert('loginAlert', result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showAlert('loginAlert', 'Login failed: ' + error.message, 'error');
+        })
+        .authenticateTeacher(email, password);
+    });
+
+    // Logout
+    function logout() {
+      sessionStorage.removeItem('pwUser');
+      currentUser = null;
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    // Show Main App
+    function showMainApp() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+      
+      document.getElementById('userName').textContent = currentUser.name;
+      document.getElementById('userEmail').textContent = currentUser.email;
+      
+      // Initialize
+      getLocation();
+      loadCenters();
+      loadTodayStatus();
+      loadStats();
+      loadAttendanceRecords();
+      loadLeaveRequests();
+    }
+
+    // Get Current Location
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            currentLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            displayLocation();
+          },
+          function(error) {
+            document.getElementById('locationName').textContent = 'Location access denied';
+            document.getElementById('locationCoords').textContent = 'Please enable location to mark attendance';
+          }
+        );
+      } else {
+        document.getElementById('locationName').textContent = 'Geolocation not supported';
+        document.getElementById('locationCoords').textContent = 'Your browser does not support geolocation';
+      }
+    }
+
+    // Load Centers
+    function loadCenters() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            centers = result.centers;
+            displayLocation();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load centers:', error);
+        })
+        .getCenters();
+    }
+
+    // Display Location
+    function displayLocation() {
+      if (!currentLocation) return;
+      
+      // Determine location
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('locationName').textContent = result.location;
+          document.getElementById('locationCoords').textContent = 
+            `${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`;
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('locationName').textContent = 'Unknown';
+        })
+        .determineLocation(currentLocation.lat, currentLocation.lng);
+    }
+
+    // Load Today's Status
+    function loadTodayStatus() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            if (result.isSunday) {
+              document.getElementById('statusValue').textContent = 'Off';
+              document.getElementById('statusValue').parentElement.classList.add('warning');
+              showAlert('dashboardAlert', result.message, 'warning');
+              document.getElementById('clockInBtn').disabled = true;
+              document.getElementById('clockOutBtn').disabled = true;
+            } else if (result.hasClockedIn) {
+              document.getElementById('statusValue').textContent = result.status;
+              document.getElementById('statusValue').parentElement.classList.add('success');
+              document.getElementById('clockInValue').textContent = result.clockInTime || '--:--';
+              document.getElementById('clockOutValue').textContent = result.clockOutTime || '--:--';
+              document.getElementById('hoursValue').textContent = result.hoursWorked || '0.00';
+              
+              document.getElementById('clockInBtn').disabled = true;
+              document.getElementById('clockOutBtn').disabled = result.hasClockedOut;
+            } else {
+              document.getElementById('statusValue').textContent = 'Not Marked';
+              document.getElementById('clockInBtn').disabled = false;
+              document.getElementById('clockOutBtn').disabled = true;
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          showAlert('dashboardAlert', 'Error loading status: ' + error.message, 'error');
+        })
+        .getTodayStatus(currentUser.email);
+    }
+
+    // Clock In
+    function clockIn() {
+      if (!currentLocation) {
+        showAlert('dashboardAlert', 'Please enable location access to clock in', 'error');
+        return;
+      }
+      
+      showLoading(true);
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          if (result.success) {
+            showAlert('dashboardAlert', result.message, 'success');
+            loadTodayStatus();
+            loadStats();
+            loadAttendanceRecords();
+          } else {
+            showAlert('dashboardAlert', result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showAlert('dashboardAlert', 'Clock in failed: ' + error.message, 'error');
+        })
+        .clockIn(currentUser.email, currentUser.name, currentLocation.lat, currentLocation.lng, '');
+    }
+
+    // Clock Out
+    function clockOut() {
+      if (!currentLocation) {
+        showAlert('dashboardAlert', 'Please enable location access to clock out', 'error');
+        return;
+      }
+      
+      showLoading(true);
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          if (result.success) {
+            showAlert('dashboardAlert', result.message + ' - ' + result.hoursWorked + ' hours worked', 'success');
+            loadTodayStatus();
+            loadStats();
+            loadAttendanceRecords();
+          } else {
+            showAlert('dashboardAlert', result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showAlert('dashboardAlert', 'Clock out failed: ' + error.message, 'error');
+        })
+        .clockOut(currentUser.email, currentLocation.lat, currentLocation.lng);
+    }
+
+    // Load Statistics
+    function loadStats() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            document.getElementById('statPresent').textContent = result.stats.present;
+            document.getElementById('statAbsent').textContent = result.stats.absent;
+            document.getElementById('statTotalHours').textContent = result.stats.totalHours;
+            document.getElementById('statAvgHours').textContent = result.stats.avgHours;
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load stats:', error);
+        })
+        .getAttendanceStats(currentUser.email);
+    }
+
+    // Load Attendance Records
+    function loadAttendanceRecords() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            const tbody = document.getElementById('attendanceTable');
+            tbody.innerHTML = '';
+            
+            if (result.records.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 32px; color: var(--text-secondary);">No attendance records found</td></tr>';
+              return;
+            }
+            
+            result.records.reverse().forEach(record => {
+              const row = tbody.insertRow();
+              row.innerHTML = `
+                <td>${record.date}</td>
+                <td>${record.clockInTime || '--'}<br><small style="color: var(--text-secondary);">${record.clockInLocation || '--'}</small></td>
+                <td>${record.clockOutTime || '--'}<br><small style="color: var(--text-secondary);">${record.clockOutLocation || '--'}</small></td>
+                <td>${record.hoursWorked || '--'}</td>
+                <td><span class="badge badge-${record.status === 'Present' ? 'success' : (record.status === 'Off' ? 'info' : 'danger')}">${record.status}</span></td>
+              `;
+            });
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load attendance:', error);
+        })
+        .getAttendanceRecords(currentUser.email, null, null);
+    }
+
+    // Submit Leave Request
+    document.getElementById('leaveForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+      const reason = document.getElementById('leaveReason').value;
+      
+      showLoading(true);
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          if (result.success) {
+            showAlert('leaveAlert', result.message, 'success');
+            document.getElementById('leaveForm').reset();
+            loadLeaveRequests();
+          } else {
+            showAlert('leaveAlert', result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showAlert('leaveAlert', 'Failed to submit request: ' + error.message, 'error');
+        })
+        .submitLeaveRequest(currentUser.email, currentUser.name, currentUser.managerEmail, fromDate, toDate, reason);
+    });
+
+    // Load Leave Requests
+    function loadLeaveRequests() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            const tbody = document.getElementById('leaveTable');
+            tbody.innerHTML = '';
+            
+            if (result.requests.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 32px; color: var(--text-secondary);">No leave requests found</td></tr>';
+              return;
+            }
+            
+            result.requests.reverse().forEach(request => {
+              const row = tbody.insertRow();
+              const statusBadge = request.status === 'Approved' ? 'success' : 
+                                 (request.status === 'Rejected' ? 'danger' : 'warning');
+              row.innerHTML = `
+                <td>${request.fromDate}</td>
+                <td>${request.toDate}</td>
+                <td>${request.days}</td>
+                <td>${request.reason}</td>
+                <td><span class="badge badge-${statusBadge}">${request.status}</span></td>
+              `;
+            });
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load leave requests:', error);
+        })
+        .getLeaveRequests(currentUser.email);
+    }
+
+    // Switch Tabs
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName + 'Tab').classList.add('active');
+      
+      // Reload data if needed
+      if (tabName === 'attendance') {
+        loadAttendanceRecords();
+      } else if (tabName === 'leave') {
+        loadLeaveRequests();
+      }
+    }
+
+    // Utility Functions
+    function showLoading(show) {
+      document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+    }
+
+    function showAlert(elementId, message, type) {
+      const alertDiv = document.getElementById(elementId);
+      alertDiv.innerHTML = `
+        <div class="alert alert-${type}">
+          <div>${message}</div>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        alertDiv.innerHTML = '';
+      }, 5000);
+    }
+
+    // Set minimum date for leave form
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('fromDate').min = today;
+    document.getElementById('toDate').min = today;
+    
+    document.getElementById('fromDate').addEventListener('change', function() {
+      document.getElementById('toDate').min = this.value;
+    });
+  </script>
+</body>
+</html>
