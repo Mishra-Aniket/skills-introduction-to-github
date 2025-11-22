@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock In/Out System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .status-badge.logged-in {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.clocked-in {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .status-badge.clocked-out {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      margin-bottom: 0;
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .session-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .session-info p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .session-info strong {
+      color: #333;
+    }
+
+    .recovery-section {
+      border-top: 2px solid #e0e0e0;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .link-button {
+      background: none;
+      border: none;
+      color: #667eea;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 5px;
+      margin-top: 10px;
+    }
+
+    .link-button:hover {
+      color: #764ba2;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⏰ Clock In/Out System</h1>
+    <p class="subtitle">Manage your attendance with ease</p>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen">
+      <div class="form-group">
+        <label for="loginName">Full Name</label>
+        <input type="text" id="loginName" placeholder="Enter your full name" required>
+      </div>
+      <div class="form-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">
+        Login
+        <span id="loginLoading" class="loading hidden"></span>
+      </button>
+      
+      <div class="recovery-section">
+        <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 10px;">
+          Lost your session after browser close or phone restart?
+        </p>
+        <button class="btn-secondary" onclick="handleRecovery()">
+          Recover Session
+          <span id="recoveryLoading" class="loading hidden"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="appScreen" class="hidden">
+      <div class="session-info">
+        <p><strong>Welcome back!</strong></p>
+        <p id="userName"></p>
+        <p id="userEmail"></p>
+      </div>
+
+      <!-- Clock In/Out Buttons -->
+      <div id="clockControls">
+        <button id="clockInBtn" class="btn-success" onclick="handleClockIn()">
+          Clock In
+          <span id="clockInLoading" class="loading hidden"></span>
+        </button>
+        <button id="clockOutBtn" class="btn-danger hidden" onclick="handleClockOut()">
+          Clock Out
+          <span id="clockOutLoading" class="loading hidden"></span>
+        </button>
+      </div>
+
+      <!-- Session Recovery Info -->
+      <div id="sessionRecoveryInfo" class="hidden">
+        <div class="alert alert-info">
+          <strong>Session Recovered!</strong><br>
+          You have an open clock-in from: <span id="recoveredClockInTime"></span>
+        </div>
+      </div>
+
+      <button class="btn-secondary" onclick="handleLogout()">
+        Logout
+      </button>
+    </div>
+
+    <!-- Fallback Clock Out Screen -->
+    <div id="fallbackScreen" class="hidden">
+      <div class="alert alert-warning">
+        <strong>Session Expired</strong><br>
+        Your session has expired, but we detected an open clock-in. You can clock out without re-authenticating.
+      </div>
+      
+      <div class="session-info">
+        <p><strong>Open Clock-In Detected</strong></p>
+        <p id="fallbackClockInTime"></p>
+        <p id="fallbackUserEmail"></p>
+      </div>
+
+      <button class="btn-danger" onclick="handleFallbackClockOut()">
+        Clock Out Now
+        <span id="fallbackLoading" class="loading hidden"></span>
+      </button>
+
+      <button class="btn-secondary" onclick="showLoginScreen()">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Session management
+    const SESSION_KEY = 'clockin_session_token';
+    const USER_KEY = 'clockin_user_data';
+    
+    let currentSession = null;
+    let currentUser = null;
+
+    // Initialize app on load
+    window.onload = function() {
+      checkExistingSession();
+    };
+
+    // Check for existing session
+    function checkExistingSession() {
+      const sessionToken = localStorage.getItem(SESSION_KEY);
+      const userData = localStorage.getItem(USER_KEY);
+
+      if (sessionToken && userData) {
+        currentSession = sessionToken;
+        currentUser = JSON.parse(userData);
+        
+        // Validate session with server
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              showAppScreen();
+              updateUIWithStatus(result);
+            } else {
+              // Session invalid, clear local storage
+              clearSession();
+              showLoginScreen();
+            }
+          })
+          .withFailureHandler(function(error) {
+            showAlert('Error validating session: ' + error.message, 'error');
+            showLoginScreen();
+          })
+          .getUserStatus(sessionToken);
+      } else {
+        showLoginScreen();
+      }
+    }
+
+    // Handle login
+    function handleLogin() {
+      const name = document.getElementById('loginName').value.trim();
+      const email = document.getElementById('loginEmail').value.trim();
+
+      if (!name || !email) {
+        showAlert('Please enter both name and email', 'error');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showAlert('Please enter a valid email address', 'error');
+        return;
+      }
+
+      setLoading('loginLoading', true);
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          setLoading('loginLoading', false);
+          
+          if (result.success) {
+            // Save session to localStorage (always, not just with "Remember Me")
+            saveSession(result.sessionToken, result.user);
+            
+            currentSession = result.sessionToken;
+            currentUser = result.user;
+            
+            showAlert('Logged in successfully!', 'success');
+            showAppScreen();
+            checkUserStatus();
+          } else {
+            showAlert(result.error || 'Login failed', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          setLoading('loginLoading', false);
+          showAlert('Error: ' + error.message, 'error');
+        })
+        .login(email, name);
+    }
+
+    // Handle session recovery
+    function handleRecovery() {
+      const email = document.getElementById('loginEmail').value.trim();
+
+      if (!email) {
+        showAlert('Please enter your email to recover session', 'error');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showAlert('Please enter a valid email address', 'error');
+        return;
+      }
+
+      setLoading('recoveryLoading', true);
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          setLoading('recoveryLoading', false);
+          
+          if (result.success) {
+            // Save recovered session
+            saveSession(result.sessionToken, result.user);
+            
+            currentSession = result.sessionToken;
+            currentUser = result.user;
+            
+            showAppScreen();
+            
+            if (result.hasOpenClockIn) {
+              showAlert('Session recovered! You have an open clock-in.', 'success');
+              showRecoveryInfo(result.openClockIn);
+              showClockOutButton();
+            } else {
+              showAlert('Session recovered successfully!', 'success');
+              showClockInButton();
+            }
+          } else {
+            showAlert(result.error || 'Recovery failed', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          setLoading('recoveryLoading', false);
+          showAlert('Error: ' + error.message, 'error');
+        })
+        .recoverSession(email);
+    }
+
+    // Handle clock in
+    function handleClockIn() {
+      if (!currentSession) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      setLoading('clockInLoading', true);
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          setLoading('clockInLoading', false);
+          
+          if (result.success) {
+            showAlert('Clocked in successfully at ' + formatTime(result.clockInTime), 'success');
+            showClockOutButton();
+          } else {
+            if (result.openSession) {
+              showAlert('You already have an open clock-in session', 'warning');
+              showClockOutButton();
+            } else {
+              showAlert(result.error || 'Clock in failed', 'error');
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          setLoading('clockInLoading', false);
+          showAlert('Error: ' + error.message, 'error');
+        })
+        .clockIn(currentSession);
+    }
+
+    // Handle clock out
+    function handleClockOut() {
+      if (!currentSession) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      setLoading('clockOutLoading', true);
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          setLoading('clockOutLoading', false);
+          
+          if (result.success) {
+            showAlert('Clocked out successfully! Duration: ' + result.duration + ' hours', 'success');
+            showClockInButton();
+            hideRecoveryInfo();
+          } else {
+            showAlert(result.error || 'Clock out failed', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          setLoading('clockOutLoading', false);
+          showAlert('Error: ' + error.message, 'error');
+        })
+        .clockOut(currentSession);
+    }
+
+    // Handle fallback clock out
+    function handleFallbackClockOut() {
+      const email = document.getElementById('fallbackUserEmail').textContent.replace('Email: ', '');
+
+      setLoading('fallbackLoading', true);
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          setLoading('fallbackLoading', false);
+          
+          if (result.success) {
+            showAlert('Clocked out successfully! Duration: ' + result.duration + ' hours', 'success');
+            showLoginScreen();
+          } else {
+            showAlert(result.error || 'Fallback clock out failed', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          setLoading('fallbackLoading', false);
+          showAlert('Error: ' + error.message, 'error');
+        })
+        .fallbackClockOut(email);
+    }
+
+    // Handle logout
+    function handleLogout() {
+      if (currentSession) {
+        google.script.run
+          .withSuccessHandler(function() {
+            clearSession();
+            showAlert('Logged out successfully', 'success');
+            showLoginScreen();
+          })
+          .withFailureHandler(function() {
+            clearSession();
+            showLoginScreen();
+          })
+          .logout(currentSession);
+      } else {
+        clearSession();
+        showLoginScreen();
+      }
+    }
+
+    // Check user status
+    function checkUserStatus() {
+      if (!currentSession) return;
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            updateUIWithStatus(result);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error checking status:', error);
+        })
+        .getUserStatus(currentSession);
+    }
+
+    // Update UI with user status
+    function updateUIWithStatus(result) {
+      if (result.hasOpenClockIn) {
+        showClockOutButton();
+        if (result.openClockIn) {
+          showRecoveryInfo(result.openClockIn);
+        }
+      } else {
+        showClockInButton();
+        hideRecoveryInfo();
+      }
+    }
+
+    // Save session to localStorage
+    function saveSession(token, user) {
+      localStorage.setItem(SESSION_KEY, token);
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+    }
+
+    // Clear session from localStorage
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(USER_KEY);
+      currentSession = null;
+      currentUser = null;
+    }
+
+    // Show/hide screens
+    function showLoginScreen() {
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('appScreen').classList.add('hidden');
+      document.getElementById('fallbackScreen').classList.add('hidden');
+      clearAlerts();
+    }
+
+    function showAppScreen() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appScreen').classList.remove('hidden');
+      document.getElementById('fallbackScreen').classList.add('hidden');
+      
+      if (currentUser) {
+        document.getElementById('userName').textContent = 'Name: ' + currentUser.name;
+        document.getElementById('userEmail').textContent = 'Email: ' + currentUser.email;
+      }
+    }
+
+    function showFallbackScreen(email, clockInTime) {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appScreen').classList.add('hidden');
+      document.getElementById('fallbackScreen').classList.remove('hidden');
+      
+      document.getElementById('fallbackUserEmail').textContent = 'Email: ' + email;
+      document.getElementById('fallbackClockInTime').textContent = 'Clocked in at: ' + formatTime(clockInTime);
+    }
+
+    // Show/hide buttons
+    function showClockInButton() {
+      document.getElementById('clockInBtn').classList.remove('hidden');
+      document.getElementById('clockOutBtn').classList.add('hidden');
+    }
+
+    function showClockOutButton() {
+      document.getElementById('clockInBtn').classList.add('hidden');
+      document.getElementById('clockOutBtn').classList.remove('hidden');
+    }
+
+    // Show/hide recovery info
+    function showRecoveryInfo(openClockIn) {
+      const recoveryInfo = document.getElementById('sessionRecoveryInfo');
+      const timeElement = document.getElementById('recoveredClockInTime');
+      
+      recoveryInfo.classList.remove('hidden');
+      timeElement.textContent = formatTime(openClockIn.clockInTime);
+    }
+
+    function hideRecoveryInfo() {
+      document.getElementById('sessionRecoveryInfo').classList.add('hidden');
+    }
+
+    // Alert management
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'alert alert-' + type;
+      alertDiv.textContent = message;
+      
+      alertContainer.appendChild(alertDiv);
+      
+      setTimeout(function() {
+        alertDiv.remove();
+      }, 5000);
+    }
+
+    function clearAlerts() {
+      document.getElementById('alertContainer').innerHTML = '';
+    }
+
+    // Loading management
+    function setLoading(elementId, isLoading) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        if (isLoading) {
+          element.classList.remove('hidden');
+        } else {
+          element.classList.add('hidden');
+        }
+      }
+    }
+
+    // Utility functions
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function formatTime(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
+  </script>
+</body>
+</html>

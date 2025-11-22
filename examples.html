@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock-In/Out System - Examples</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .example-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .example-card h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .example-card .icon {
+      font-size: 28px;
+    }
+
+    .example-card p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .code-block {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 15px;
+      border-left: 4px solid #667eea;
+    }
+
+    .code-block code {
+      color: #333;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .step-list li {
+      padding: 10px 0;
+      padding-left: 30px;
+      position: relative;
+      color: #555;
+    }
+
+    .step-list li:before {
+      content: "→";
+      position: absolute;
+      left: 10px;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .feature-badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+
+    .info-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .info-section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .info-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-section li {
+      padding: 10px 0;
+      color: #555;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-section li:last-child {
+      border-bottom: none;
+    }
+
+    .scenario {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+
+    .scenario h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .scenario p {
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: transform 0.3s;
+      margin-top: 20px;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .examples-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📚 Clock-In/Out System - Usage Examples</h1>
+      <p>Learn how to use the session persistence features</p>
+    </div>
+
+    <!-- Key Features -->
+    <div class="info-section">
+      <h2>🌟 Key Features</h2>
+      <div style="margin-top: 20px;">
+        <span class="feature-badge">30+ Day Sessions</span>
+        <span class="feature-badge">Auto-Save Tokens</span>
+        <span class="feature-badge">Session Recovery</span>
+        <span class="feature-badge">Fallback Clock-Out</span>
+        <span class="feature-badge">Mobile Optimized</span>
+        <span class="feature-badge">Offline Ready</span>
+      </div>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="examples-grid">
+      <!-- Example 1 -->
+      <div class="example-card">
+        <h2><span class="icon">📱</span> Mobile Worker</h2>
+        <p>Sarah works from her phone. She clocks in at 9 AM, closes her browser to make calls, and comes back at 5 PM to clock out.</p>
+        <ul class="step-list">
+          <li>Opens app on phone</li>
+          <li>Logs in with email</li>
+          <li>Clocks in (session saved)</li>
+          <li>Closes browser/app</li>
+          <li>Opens app hours later</li>
+          <li>Session auto-restored</li>
+          <li>Clocks out successfully</li>
+        </ul>
+        <div class="code-block">
+          <code>
+// Session persists in localStorage<br>
+sessionToken: "abc-123-def-456"<br>
+status: "clocked-in"<br>
+expires: 30 days from login
+          </code>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="example-card">
+        <h2><span class="icon">🔄</span> Phone Restart</h2>
+        <p>John clocks in, his phone dies and restarts. When he opens the app again, his session is recovered.</p>
+        <ul class="step-list">
+          <li>Clocks in at work</li>
+          <li>Phone battery dies</li>
+          <li>Phone restarts</li>
+          <li>Opens app again</li>
+          <li>Click "Recover Session"</li>
+          <li>Enters email</li>
+          <li>Session recovered with open clock-in</li>
+        </ul>
+        <div class="code-block">
+          <code>
+// Recovery process<br>
+recoverSession(email) → finds open clock-in<br>
+creates new session → preserves clock-in time<br>
+user can clock out normally
+          </code>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="example-card">
+        <h2><span class="icon">⏰</span> Token Expiration</h2>
+        <p>Alice's session expires after 30 days, but she still has an open clock-in. She can use fallback clock-out.</p>
+        <ul class="step-list">
+          <li>Session token expires</li>
+          <li>Opens app after 30+ days</li>
+          <li>System detects expired session</li>
+          <li>Shows fallback clock-out option</li>
+          <li>Enters email for verification</li>
+          <li>Clocks out without re-login</li>
+        </ul>
+        <div class="code-block">
+          <code>
+// Fallback mechanism<br>
+if (sessionExpired && hasOpenClockIn) {<br>
+&nbsp;&nbsp;allowFallbackClockOut(email);<br>
+}
+          </code>
+        </div>
+      </div>
+
+      <!-- Example 4 -->
+      <div class="example-card">
+        <h2><span class="icon">💻</span> Desktop User</h2>
+        <p>Mike works from desktop. He closes his browser at the end of each day and opens it the next morning.</p>
+        <ul class="step-list">
+          <li>Logs in Monday morning</li>
+          <li>Clocks in</li>
+          <li>Works all day</li>
+          <li>Clocks out in evening</li>
+          <li>Closes browser completely</li>
+          <li>Opens Tuesday morning</li>
+          <li>Session auto-restored</li>
+          <li>Ready to clock in again</li>
+        </ul>
+        <div class="code-block">
+          <code>
+// localStorage persists between sessions<br>
+window.onload = checkExistingSession();<br>
+// Automatically validates and restores
+          </code>
+        </div>
+      </div>
+
+      <!-- Example 5 -->
+      <div class="example-card">
+        <h2><span class="icon">🌐</span> Multiple Devices</h2>
+        <p>Emma uses both phone and computer. She logs in separately on each device.</p>
+        <ul class="step-list">
+          <li>Logs in on phone</li>
+          <li>Clocks in (Session A)</li>
+          <li>Later logs in on computer</li>
+          <li>Gets new session (Session B)</li>
+          <li>Both sessions are valid</li>
+          <li>Can clock out from either device</li>
+        </ul>
+        <div class="code-block">
+          <code>
+// Multiple sessions per user allowed<br>
+sessions: [<br>
+&nbsp;&nbsp;{device: "phone", token: "xxx"},<br>
+&nbsp;&nbsp;{device: "computer", token: "yyy"}<br>
+]
+          </code>
+        </div>
+      </div>
+
+      <!-- Example 6 -->
+      <div class="example-card">
+        <h2><span class="icon">🚨</span> Emergency Clock-Out</h2>
+        <p>David forgot to clock out yesterday. He can still clock out the old session even though it's the next day.</p>
+        <ul class="step-list">
+          <li>Forgot to clock out yesterday</li>
+          <li>Opens app today</li>
+          <li>System detects open clock-in</li>
+          <li>Shows warning and clock-out button</li>
+          <li>Clocks out previous day's session</li>
+          <li>Can start fresh today</li>
+        </ul>
+        <div class="code-block">
+          <code>
+// Open session detection<br>
+getUserStatus() → {hasOpenClockIn: true}<br>
+// Shows clock-out button automatically
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenarios -->
+    <div class="info-section">
+      <h2>🎯 Common Scenarios</h2>
+      
+      <div class="scenario">
+        <h3>Scenario 1: Lost Session After Browser Crash</h3>
+        <p><strong>Problem:</strong> Browser crashed and cleared cache/localStorage</p>
+        <p><strong>Solution:</strong></p>
+        <ol class="step-list">
+          <li>Click "Recover Session" button</li>
+          <li>Enter your email address</li>
+          <li>System finds your user account</li>
+          <li>Creates new session token</li>
+          <li>Checks for open clock-in</li>
+          <li>Restores your work session</li>
+        </ol>
+      </div>
+
+      <div class="scenario">
+        <h3>Scenario 2: Switched to Private/Incognito Mode</h3>
+        <p><strong>Problem:</strong> Session exists in normal mode but not in private mode</p>
+        <p><strong>Solution:</strong></p>
+        <ol class="step-list">
+          <li>Simply login again with same email</li>
+          <li>System recognizes existing user</li>
+          <li>Creates new session for private mode</li>
+          <li>Both sessions remain valid</li>
+        </ol>
+      </div>
+
+      <div class="scenario">
+        <h3>Scenario 3: Working Across Time Zones</h3>
+        <p><strong>Problem:</strong> Traveling and crossing time zones</p>
+        <p><strong>Solution:</strong></p>
+        <ol class="step-list">
+          <li>Clock-in times stored in server timezone</li>
+          <li>Session persists regardless of local time</li>
+          <li>Duration calculated from server timestamps</li>
+          <li>Works seamlessly across time zones</li>
+        </ol>
+      </div>
+
+      <div class="scenario">
+        <h3>Scenario 4: Admin Needs to Force Clock-Out</h3>
+        <p><strong>Problem:</strong> User forgot to clock out and is unreachable</p>
+        <p><strong>Solution:</strong></p>
+        <ol class="step-list">
+          <li>Admin opens Apps Script editor</li>
+          <li>Runs: forceClockOut(userId)</li>
+          <li>System clocks out the user</li>
+          <li>Marks as "Admin Force" in records</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- API Examples -->
+    <div class="info-section">
+      <h2>⚙️ API Usage Examples</h2>
+      
+      <h3 style="color: #667eea; margin-top: 20px;">Client-Side (JavaScript)</h3>
+      <div class="code-block">
+        <code>
+// Login and save session<br>
+google.script.run<br>
+&nbsp;&nbsp;.withSuccessHandler(function(result) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;localStorage.setItem('session_token', result.sessionToken);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;localStorage.setItem('user_data', JSON.stringify(result.user));<br>
+&nbsp;&nbsp;})<br>
+&nbsp;&nbsp;.login(email, name);<br>
+<br>
+// Clock in with stored token<br>
+const token = localStorage.getItem('session_token');<br>
+google.script.run<br>
+&nbsp;&nbsp;.withSuccessHandler(function(result) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (result.success) alert('Clocked in!');<br>
+&nbsp;&nbsp;})<br>
+&nbsp;&nbsp;.clockIn(token);<br>
+<br>
+// Recover session after browser restart<br>
+google.script.run<br>
+&nbsp;&nbsp;.withSuccessHandler(function(result) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (result.hasOpenClockIn) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showClockOutButton();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;})<br>
+&nbsp;&nbsp;.recoverSession(email);
+        </code>
+      </div>
+
+      <h3 style="color: #667eea; margin-top: 20px;">Server-Side (Apps Script)</h3>
+      <div class="code-block">
+        <code>
+// Check for open clock-ins across all users<br>
+function adminCheckOpenSessions() {<br>
+&nbsp;&nbsp;const openSessions = getAllOpenSessions();<br>
+&nbsp;&nbsp;Logger.log('Found ' + openSessions.length + ' open sessions');<br>
+&nbsp;&nbsp;return openSessions;<br>
+}<br>
+<br>
+// Generate monthly report<br>
+function monthlyReport() {<br>
+&nbsp;&nbsp;const startDate = new Date(2024, 0, 1); // Jan 1, 2024<br>
+&nbsp;&nbsp;const endDate = new Date(2024, 0, 31); // Jan 31, 2024<br>
+&nbsp;&nbsp;return generateAttendanceReport(startDate, endDate);<br>
+}<br>
+<br>
+// Cleanup old sessions<br>
+function weeklyMaintenance() {<br>
+&nbsp;&nbsp;cleanupExpiredSessions();<br>
+&nbsp;&nbsp;backupData();<br>
+}
+        </code>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="?page=index" class="button">Try the System Now →</a>
+      <a href="?page=leave" class="button">Leave Management →</a>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 40px; color: white; opacity: 0.8;">
+      <p>Built with Google Apps Script • Session Persistence • Mobile Ready</p>
+    </div>
+  </div>
+</body>
+</html>
